@@ -40,12 +40,13 @@ export const Inner = styled.div`
       .index-module_KeyboardItem__Hjjrl {
          background-color: #6739b6;
          border: none;
-         p {
+         p, img {
             color: #fff;
             user-select: none;
+            font-size: 30px;
          }
-         img {
-            background-color: #fff;
+         &:hover {
+            background-color: #4BD68A;
          }
       }
    }

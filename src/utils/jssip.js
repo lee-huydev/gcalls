@@ -16,46 +16,54 @@ const configuration = {
    user_agent: 'JsSip-' + userAgent,
 };
 JsSIP.debug.enable('JsSIP: *'); // log error jssip
-const phone = new JsSIP.UA(configuration);
+const phone = new JsSIP.UA(configuration); //init class phone
 export default function CallJssip() {
    const [status, setStatus] = useState(null);
-   // const [view, setViews] = useState({
-   //    selfView: '',
-   //    remoteView: '',
-   // });
-   // create html audio Object
-   // const localStream = new MediaStream();
-   // useEffect(() => {
-   //    setViews({
-   //       selfView: (document.getElementById('selfView').srcObject =
-   //          localStream),
-   //       remoteView: document.getElementById('remoteView'),
-   //    });
-   // }, []);
-   // const { selfView } = view;
-   phone.on('newRTCSession', (e) => {
-      const session = e.session;
-      session.on('progress', (e) => {
-         console.log('This is session progress............................')
-         const selfView = document.getElementById('selfView');
-         selfView.src = window.URL.createObjectURL(session.connection.getLocalStreams()[0])
-      });
+   // Init peerconnection data of video and audio
+   const peer = new RTCPeerConnection({
+      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
    });
+   //===============
+   const onWebcam = async (video) => {
+      const selfView = document.getElementById('selfView');
+      if (video) {
+         selfView.style.display = 'block';
+         const localStream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: true,
+         });
+         localStream.getTracks().forEach((track) => {
+            peer.addTrack(track, localStream);
+         });
+         selfView.srcObject = localStream;
+      } else {
+         selfView.style.display = 'none';
+         const stream = selfView.srcObject;
+         const tracks = stream.getTracks();
+         tracks.forEach(function (track) {
+            track.stop();
+         });
+         selfView.srcObject = null;
+      }
+   };
    const eventHandlers = {
       connecting: function () {
          setStatus('Connecting...');
       },
       progress: function () {
          setStatus('Ringing...');
+         onWebcam(true);
       },
       failed: function () {
          setStatus('Failed...');
+         onWebcam(false);
       },
       confirmed: function () {
          setStatus('confirmed');
       },
       ended: function () {
          setStatus('Ended...');
+         onWebcam(false);
       },
    };
    const callOptions = {

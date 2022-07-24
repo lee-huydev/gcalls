@@ -36,8 +36,6 @@ function App() {
          }, 1000);
       }
    }, [status]);
-   // console.log('status call: ' + status);
-   // console.log(times);
    return (
       <>
          <Video />

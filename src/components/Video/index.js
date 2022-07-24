@@ -3,7 +3,6 @@ export default function Video() {
    return (
       <VideoContainer>
          <video id="selfView" autoPlay muted={true}></video>
-         <video id="remoteView" autoPlay></video>
       </VideoContainer>
    );
 }
