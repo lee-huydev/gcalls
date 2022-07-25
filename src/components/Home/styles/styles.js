@@ -22,6 +22,7 @@ export const Inner = styled.div`
    border-radius: 20px;
    .form {
     width: 80%;
+    margin-top: 30px;
       .input {
          width: 100%;
          margin: 0 auto;

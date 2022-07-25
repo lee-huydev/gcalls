@@ -1,10 +1,16 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { CallMode, Home, Video } from './components';
 import CallJssip from './utils/jssip';
+import { History } from './components';
+import { Container, Inner } from './components/Home/styles/styles'
+import { Option } from './components'
 function App() {
    const [valueInput, setValueInput] = useState('');
    const [times, setTimes] = useState(0);
    const [callMode, setCallMode] = useState(false);
+   const [option, setOption] = useState('call');
+   const [userHistory, setUserHistory] = useState(null);
    const { status, onCall, phoneStart, stop } = CallJssip();
    const clickCall = () => {
       if (valueInput) {
@@ -36,15 +42,31 @@ function App() {
          }, 1000);
       }
    }, [status]);
+   const getData = async () => {
+      const res = await axios.get(process.env.REACT_APP_DATABASE_URL);
+      setUserHistory(res.data.reverse());
+   };
+   useEffect(() => {
+      getData();
+   }, []);
    return (
       <>
          <Video />
          {!callMode ? (
-            <Home
-               clickCall={clickCall}
-               setValueInput={setValueInput}
-               valueInput={valueInput}
-            />
+            <Container>
+               <Inner>
+                  <Option setOption={setOption}/>
+               {option === 'call' ? (
+                  <Home
+                     clickCall={clickCall}
+                     setValueInput={setValueInput}
+                     valueInput={valueInput}
+                  />
+               ) : (
+                  <History data={userHistory}/>
+               )}
+               </Inner>
+            </Container>
          ) : (
             <CallMode
                valueInput={valueInput}
